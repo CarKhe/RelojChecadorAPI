@@ -14,7 +14,7 @@ public class AsistenciaService : IAsistenciaService
     private readonly IFkCheck _fkCheck;
     private readonly IMapper _mapper;
     private readonly IMensajesDB _mensajeDb;
-    private readonly string MODELO = "USUARIOAREA";
+    //private readonly string MODELO = "USUARIOAREA";
     public AsistenciaService(DbRelojChecadorContext context, IFkCheck fkCheck,
                                 IMensajesDB mensajesDB, IMapper mapper)
     {

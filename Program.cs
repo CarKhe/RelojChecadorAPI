@@ -13,6 +13,7 @@ builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<IUsuarioAreaService, UsuarioAreaService>();
 builder.Services.AddScoped<IAsistenciaService,AsistenciaService>();
+builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IFkCheck, FkCheck>();
 builder.Services.AddScoped<ISyntaxisDB, SyntaxisDB>();
 builder.Services.AddScoped<IMensajesDB,MensajesDB>();
