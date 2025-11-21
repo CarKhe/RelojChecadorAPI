@@ -32,6 +32,12 @@ public class UsuariosService : IUsuariosService
         return await query.ToListAsync();
     }
 
+    public async Task<IEnumerable<UsuariosCrearDTOs>> GetOneUsuario(long id)
+    {
+        var query = GetUserByID(id);
+        return await query.ToListAsync();
+    }
+
     public async Task<(bool isSuccess, List<string> errores)> PostUsuario([FromBody] UsuariosCrearDTOs usuario)
     {
         bool isValidFk;
@@ -80,7 +86,6 @@ public class UsuariosService : IUsuariosService
     {
         return from u in _context.TblUsuarios
                join r in _context.TblRoles on u.IdRol equals r.IdRol
-               where u.Activo == 1
                select new UsuariosTablaDTOs
                {
                     id = u.IdUsuario,
@@ -93,5 +98,18 @@ public class UsuariosService : IUsuariosService
                };
     }
 
-    
+    private IQueryable<UsuariosCrearDTOs> GetUserByID(long id)
+    {
+        return from u in _context.TblUsuarios
+                where u.IdUsuario == id
+                select new UsuariosCrearDTOs
+                {
+                    nombre = u.Nombre,
+                    passwordHash = u.PasswordHash,
+                    idRol = u.IdRol,
+                    telefono = u.Telefono
+                };
+    }
+
+
 }

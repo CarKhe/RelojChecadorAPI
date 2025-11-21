@@ -25,6 +25,14 @@ namespace MyApp.Namespace
             return Ok(usuarios);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<UsuariosCrearDTOs>>> GetOneUser(long id)
+        {
+            var usuario =  await _service.GetOneUsuario(id);
+            if(!usuario.Any()) return NotFound(new { Mensaje = _mensajeDB.MensajeNoEncontrado(MODELO) });
+            return Ok(usuario.FirstOrDefault());
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostUsuario([FromBody] UsuariosCrearDTOs usuario)
         {
