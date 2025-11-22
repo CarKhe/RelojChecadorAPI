@@ -32,7 +32,7 @@ public class UsuariosService : IUsuariosService
         return await query.ToListAsync();
     }
 
-    public async Task<IEnumerable<UsuariosCrearDTOs>> GetOneUsuario(long id)
+    public async Task<IEnumerable<UsuariosModificarDTO>> GetOneUsuario(long id)
     {
         var query = GetUserByID(id);
         return await query.ToListAsync();
@@ -98,15 +98,16 @@ public class UsuariosService : IUsuariosService
                };
     }
 
-    private IQueryable<UsuariosCrearDTOs> GetUserByID(long id)
+    private IQueryable<UsuariosModificarDTO> GetUserByID(long id)
     {
         return from u in _context.TblUsuarios
                 where u.IdUsuario == id
-                select new UsuariosCrearDTOs
+                select new UsuariosModificarDTO
                 {
+                    id = Convert.ToInt32(u.IdUsuario),
                     nombre = u.Nombre,
                     passwordHash = u.PasswordHash,
-                    idRol = u.IdRol,
+                    idRol = Convert.ToInt32(u.IdRol),
                     telefono = u.Telefono
                 };
     }

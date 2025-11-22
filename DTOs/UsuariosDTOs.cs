@@ -19,3 +19,17 @@ public class UsuariosTablaDTOs
     public DateTime fechaCreacion { get; set; } 
     public ulong activo { get; set; }
 }
+
+public class UsuariosModificarDTO
+{
+    public int id { get; set;}
+    public string nombre { get; set; } = string.Empty;
+
+    public string passwordHash { get; set; } = string.Empty;
+
+    public int idRol { get; set; }
+
+    public string telefono { get; set; } = string.Empty;
+
+    
+}

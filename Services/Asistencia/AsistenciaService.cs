@@ -29,6 +29,12 @@ public class AsistenciaService : IAsistenciaService
         return await query.ToListAsync();
     }
 
+    public async Task<IEnumerable<AsistenciaToDashboard>> GetLastAsistencias(int cant)
+    {
+        var query = GetLastAsistenciaQuery(cant);
+        return await query.ToListAsync();
+    }
+
     public async Task<(bool isSuccess, List<string> errores)> PostAsistencia([FromBody] AsistenciaCrearDto asistenciaCrear)
     {
         //Verificar si el usuario y Area existen
@@ -96,6 +102,24 @@ public class AsistenciaService : IAsistenciaService
                    dentroZona = a.DentroZona,
                    fechaHora = a.FechaHora
                };
+    }
+
+    private IQueryable<AsistenciaToDashboard> GetLastAsistenciaQuery(int cant)
+    {
+        return (from a in _context.TblAsistencia
+               join u in _context.TblUsuarios on a.IdUsuario equals u.IdUsuario
+               join ar in _context.TblAreas on a.IdArea equals ar.IdArea
+               join tp in _context.TblTipoMovimientos on a.IdMovimiento equals tp.IdMovimiento
+               orderby a.FechaHora descending
+               select new AsistenciaToDashboard
+               {
+                   usuario = u.Nombre,
+                   area = ar.Nombre,
+                   movimiento = tp.Movimiento,
+                   dentroZona = a.DentroZona,
+                   fechaHora = a.FechaHora
+               })
+               .Take(cant);
     }
 
 

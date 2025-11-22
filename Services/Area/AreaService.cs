@@ -67,9 +67,9 @@ public class AreaService : IAreaService
     private IQueryable<AreasTablaDTOs> GetAreaQuery()
     {
         return from a in _context.TblAreas
-                where a.Activo == 1
                 select new AreasTablaDTOs
                 {
+                    id = Convert.ToInt32(a.IdArea),
                     nombre = a.Nombre,
                     descripcion = a.Descripcion,
                     centroLat = a.CentroLat,

@@ -26,7 +26,7 @@ namespace MyApp.Namespace
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<UsuariosCrearDTOs>>> GetOneUser(long id)
+        public async Task<ActionResult<IEnumerable<UsuariosModificarDTO>>> GetOneUser(long id)
         {
             var usuario =  await _service.GetOneUsuario(id);
             if(!usuario.Any()) return NotFound(new { Mensaje = _mensajeDB.MensajeNoEncontrado(MODELO) });

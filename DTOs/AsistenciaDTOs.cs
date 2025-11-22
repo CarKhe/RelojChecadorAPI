@@ -12,6 +12,16 @@ public class AsistenciaTablaDTOs
     public DateTime fechaHora { get; set; }
 }
 
+
+public class AsistenciaToDashboard
+{
+    public string usuario { get; set; } = string.Empty;
+    public string area { get; set; } = string.Empty;
+    public string movimiento { get; set; } = string.Empty;
+    public ulong dentroZona { get; set; }
+    public DateTime fechaHora { get; set; }
+}
+
 public class AsistenciaUsuarioToDatabase
 {
     public ulong idUsuario {get; set;}
