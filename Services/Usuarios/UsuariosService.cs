@@ -15,15 +15,18 @@ public class UsuariosService : IUsuariosService
     private readonly ISyntaxisDB _syntaxisDB;
     private readonly IFkCheck _fkCheck;
     private readonly IMensajesDB _mensajeDB;
+    private readonly IUsuarioAreaService _usuarioAreaService;
     private static string MODELO = "USUARIO"; 
     public UsuariosService(DbRelojChecadorContext context, IMapper mapper,
-                        ISyntaxisDB syntaxisDB, IFkCheck fkCheck, IMensajesDB mensajesDB)
+            ISyntaxisDB syntaxisDB, IFkCheck fkCheck, IMensajesDB mensajesDB,
+            IUsuarioAreaService usuarioAreaService)
     {
         _context = context;
         _mapper = mapper;
         _syntaxisDB = syntaxisDB;
         _fkCheck = fkCheck;
         _mensajeDB = mensajesDB;
+        _usuarioAreaService = usuarioAreaService;
     }
 
     public async Task<IEnumerable<UsuariosTablaDTOs>> GetUsuarios()
@@ -40,20 +43,52 @@ public class UsuariosService : IUsuariosService
 
     public async Task<(bool isSuccess, List<string> errores)> PostUsuario([FromBody] UsuariosCrearDTOs usuario)
     {
+        //Variables
         bool isValidFk;
         List<string> errores;
-        var usuarioMap = _mapper.Map<TblUsuario>(usuario);
-        usuarioMap.Nombre = _syntaxisDB.StringUpper(usuarioMap.Nombre);
+
+        //Validaciones
         (isValidFk, errores) = _fkCheck.FkUsuario(usuario);
         if (!isValidFk)
-        {
             return (isValidFk,errores);
+        
+        //Metodo de Transaccion
+        using var trx = await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            //Guardar Usuario
+            var usuarioMap = _mapper.Map<TblUsuario>(usuario);
+            usuarioMap.Nombre = _syntaxisDB.StringUpper(usuarioMap.Nombre);
+            _context.Add(usuarioMap);
+            await _context.SaveChangesAsync();
+
+            //Guardar Areas Asigandas al usuario
+            foreach (var idArea in usuario.idAreas)
+            {
+                var usuarioArea = new UsuarioAreaCrearDto
+                {
+                    idUsuario = usuarioMap.IdUsuario,
+                    idArea = idArea
+                };
+                (isValidFk, errores) = _usuarioAreaService.PostUsuarioArea(usuarioArea);
+                if(!isValidFk)
+                {
+                    await trx.RollbackAsync();
+                    return (false,errores);
+                }
+                var usuarioAreaMap = _mapper.Map<TblUsuarioArea>(usuarioArea);
+                _context.Add(usuarioAreaMap);
+            }
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
+            return (isValidFk,[]);
         }
-        _context.Add(usuarioMap);
-        await _context.SaveChangesAsync();
-        return (isValidFk,[]);
-
-
+        catch (Exception ex)
+        {
+            await trx.RollbackAsync();
+            return (false, new List<string> { ex.Message });
+        }
     }
 
     public async Task<bool> ToogleUser(long id)

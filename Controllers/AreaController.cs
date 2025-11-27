@@ -18,11 +18,19 @@ namespace MyApp.Namespace
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AreasTablaDTOs>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<AreasTablaDTOs>>> GetArea()
         {
-            var usuarios = await _service.GetAreas();
-            if (!usuarios.Any()) return BadRequest();
-            return Ok(usuarios);
+            var area = await _service.GetAreas();
+            if (!area.Any()) return BadRequest();
+            return Ok(area);
+        }
+
+        [HttpGet("chip")]
+        public async Task<ActionResult<AreaChipDTOs[]>> GetAreaChip()
+        {
+            var areaChip = await _service.GetAreaChip();
+            if(!areaChip.Any()) return BadRequest();
+            return Ok(areaChip);
         }
 
         [HttpPost]

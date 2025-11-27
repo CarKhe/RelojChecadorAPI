@@ -15,7 +15,7 @@ public class UsuarioAreaService : IUsuarioAreaService
     private readonly IMensajesDB _mensajeDb;
     private readonly string MODELO = "USUARIOAREA";
     public UsuarioAreaService(DbRelojChecadorContext context, IMapper mapper,
-                                IFkCheck fkCheck, IMensajesDB mensajeDB)
+        IFkCheck fkCheck, IMensajesDB mensajeDB)
     {
         _context = context;
         _mapper = mapper;
@@ -28,18 +28,15 @@ public class UsuarioAreaService : IUsuarioAreaService
         return await areas.ToListAsync();
     }
 
-    public async Task<(bool isSuccess, List<string> errores)> PostUsuarioArea([FromBody] UsuarioAreaCrearDto UsuarioAreaDto)
+    public  (bool isSuccess, List<string> errores)PostUsuarioArea([FromBody] UsuarioAreaCrearDto UsuarioAreaDto)
     {
         bool isValidFk;
         List<string> errores;
-        var usuarioAreaMap = _mapper.Map<TblUsuarioArea>(UsuarioAreaDto);
         (isValidFk, errores) = _fkCheck.FkUsuarioArea(UsuarioAreaDto);
         if (!isValidFk)
         {
             return (isValidFk, errores);
         }
-        _context.Add(usuarioAreaMap);
-        await _context.SaveChangesAsync();
         return (isValidFk,errores);
     }
 

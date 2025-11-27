@@ -5,6 +5,7 @@ namespace relojChecadorAPI;
 public interface IAreaService
 {
     Task<IEnumerable<AreasTablaDTOs>> GetAreas();
+    Task<IEnumerable<AreaChipDTOs>> GetAreaChip();
     Task<(bool isSuccess, List<string> errores)> PostArea([FromBody] AreasCrearDTOs area);
     Task<bool> ToogleArea(long id);
     Task<(bool isSuccess, List<string> errores)> UpdateArea(long id, AreasCrearDTOs area);

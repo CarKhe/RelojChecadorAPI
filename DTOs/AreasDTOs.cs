@@ -20,3 +20,9 @@ public class AreasCrearDTOs
     public decimal centroLon { get; set; }
     public int radio { get; set; }
 }
+
+public class AreaChipDTOs
+{
+    public int id { get; set; }
+    public string label { get; set; } = string.Empty;
+}

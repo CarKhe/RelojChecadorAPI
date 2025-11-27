@@ -24,11 +24,18 @@ public class AreaService : IAreaService
         _fkCheck = fkCheck;
         _mensajeDB = mensajesDB;
     }
+
     public async Task<IEnumerable<AreasTablaDTOs>> GetAreas()
     {
         var areas = GetAreaQuery();
         return await areas.ToListAsync();
 
+    }
+
+    public async Task<IEnumerable<AreaChipDTOs>> GetAreaChip()
+    {
+        var areaChip = GetAreaChipQuery();
+        return await areaChip.ToListAsync();
     }
 
     public async Task<(bool isSuccess, List<string> errores)> PostArea([FromBody] AreasCrearDTOs area)
@@ -78,5 +85,16 @@ public class AreaService : IAreaService
                     fechaCreacion = a.FechaCreacion,
                     activo = a.Activo
                 };
+    }
+
+    private IQueryable<AreaChipDTOs> GetAreaChipQuery()
+    {
+        return from a in _context.TblAreas
+            where a.Activo == 1
+            select new AreaChipDTOs
+            {
+              id = Convert.ToInt32(a.IdArea),
+              label = a.Nombre  
+            };
     }
 }

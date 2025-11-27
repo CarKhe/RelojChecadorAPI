@@ -25,22 +25,6 @@ namespace MyApp.Namespace
             return Ok(usuarios);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> PostUsuarioArea([FromBody] UsuarioAreaCrearDto usuarioArea)
-        {
-            var (result, errores) = await _service.PostUsuarioArea(usuarioArea);
-            if (!result)
-            {
-                return BadRequest(new
-                {
-                    Mensaje = "Error en las llaves foráneas.",
-                    Errores = errores
-                });
-            }
-            return Ok(new { Mensaje = _mensajeDB.MensajeModificarDB(MODELO, 0) });
-
-        }
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> ToogleUsuarioArea(long id)
         {

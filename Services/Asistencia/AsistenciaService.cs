@@ -37,6 +37,9 @@ public class AsistenciaService : IAsistenciaService
 
     public async Task<(bool isSuccess, List<string> errores)> PostAsistencia([FromBody] AsistenciaCrearDto asistenciaCrear)
     {
+        //Obtener las Areas Asignadas del Cliente
+
+
         //Verificar si el usuario y Area existen
         var (isValidFk, errores) = _fkCheck.FkUsuarioAreaAsistencia(asistenciaCrear);
         if (!isValidFk)
@@ -143,6 +146,8 @@ public class AsistenciaService : IAsistenciaService
             && a.IdUsuario == asistencia.idUsuario
             select a).Any();
     }
+
+    
 
 
 }

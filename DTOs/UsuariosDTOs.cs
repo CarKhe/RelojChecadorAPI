@@ -7,6 +7,7 @@ public class UsuariosCrearDTOs
     public string passwordHash { get; set; } = string.Empty;
     public long idRol { get; set; }
     public string telefono { get; set; } = string.Empty;
+    public List<int> idAreas {get; set;} = new();
 }
 
 public class UsuariosTablaDTOs
