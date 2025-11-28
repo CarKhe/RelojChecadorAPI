@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.Linq;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -103,17 +104,67 @@ public class UsuariosService : IUsuariosService
 
     public async Task<(bool isSuccess, List<string> errores)> UpdateUser(long id, UsuariosCrearDTOs usuario)
     {
+        //Variables
         bool isValidFk;
         List<string> errores;
+        //Validaciones
+        (isValidFk, errores) = _fkCheck.FkUsuario(usuario);
+        if (!isValidFk)
+            return (isValidFk, errores);  
         var usr = await _context.TblUsuarios.FindAsync(id);
         if (usr == null)
             return (false, new List<string> { _mensajeDB.MensajeNoEncontrado(MODELO) });
-        (isValidFk, errores) = _fkCheck.FkUsuario(usuario);
-        if (!isValidFk)
-            return (isValidFk, errores);
         _mapper.Map(usuario, usr);
         usr.Nombre = _syntaxisDB.StringUpper(usr.Nombre);
         await _context.SaveChangesAsync();
+
+        //Revision de las Areas
+
+        var areasNuevas = usuario.idAreas                           // Lo que viene del frontend
+            .Select(x => (long)x)
+            .ToList();
+
+        var areasBD = await _context.TblUsuarioAreas                // Lo que ya existe en BD
+            .Where(x => x.IdUsuario == id)
+            .ToListAsync();
+    
+        //Crear/Activar áreas
+        foreach (var idArea in areasNuevas)
+        {
+            var existente = areasBD.FirstOrDefault(x => x.IdArea == idArea);
+
+            if (existente == null)
+            {
+                // No existe → agregar
+                _context.TblUsuarioAreas.Add(new TblUsuarioArea
+                {
+                    IdUsuario = id,
+                    IdArea = idArea
+                });
+            }
+            else
+            {
+                // Ya existe → activar si está inactivo
+                if (existente.Activo == 0)
+                {
+                    existente.Activo = 1;
+                }
+            }
+        }
+
+        //Desactivar áreas que ya no vienen seleccionadas
+        foreach (var area in areasBD)
+        {
+            if (!areasNuevas.Contains(area.IdArea) && area.Activo == 1)
+            {
+                area.Activo = 0;
+            }
+        }
+
+        // Guardar cambios
+        await _context.SaveChangesAsync();
+
+
         return (isValidFk, errores);
     }
 
@@ -143,9 +194,16 @@ public class UsuariosService : IUsuariosService
                     nombre = u.Nombre,
                     passwordHash = u.PasswordHash,
                     idRol = Convert.ToInt32(u.IdRol),
-                    telefono = u.Telefono
+                    telefono = u.Telefono,
+                    idAreas = _context.TblUsuarioAreas
+                            .Where(ua => ua.IdUsuario == id)
+                            .Where(ua => ua.Activo == 1)
+                            .Select(ua => (int)ua.IdArea)
+                            .ToList()
                 };
     }
+
+
 
 
 }

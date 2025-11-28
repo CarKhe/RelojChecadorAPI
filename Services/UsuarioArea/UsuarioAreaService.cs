@@ -10,18 +10,14 @@ namespace relojChecadorAPI;
 public class UsuarioAreaService : IUsuarioAreaService
 {
     private readonly DbRelojChecadorContext _context;
-    private readonly IMapper _mapper;
     private readonly IFkCheck _fkCheck;
-    private readonly IMensajesDB _mensajeDb;
-    private readonly string MODELO = "USUARIOAREA";
-    public UsuarioAreaService(DbRelojChecadorContext context, IMapper mapper,
-        IFkCheck fkCheck, IMensajesDB mensajeDB)
+    public UsuarioAreaService(DbRelojChecadorContext context,
+        IFkCheck fkCheck)
     {
         _context = context;
-        _mapper = mapper;
         _fkCheck = fkCheck;
-        _mensajeDb = mensajeDB;
     }
+
     public async Task<IEnumerable<UsuarioAreaTablaDTOs>> GetUsuarioAreas()
     {
         var areas = GetUsuarioAreaQuery();
@@ -40,6 +36,7 @@ public class UsuarioAreaService : IUsuarioAreaService
         return (isValidFk,errores);
     }
 
+
     public async Task<bool> ToogleUsuarioArea(long id)
     {
         var usuarioArea = await _context.TblUsuarioAreas.FindAsync(id);
@@ -49,20 +46,7 @@ public class UsuarioAreaService : IUsuarioAreaService
         return true;
     }
 
-    public async Task<(bool isSuccess, List<string> errores)> UpdateUsuarioArea(long id, UsuarioAreaCrearDto usuarioArea)
-    {
-        bool isValidFk;
-        List<string> errores;
-        var usr = await _context.TblUsuarioAreas.FindAsync(id);
-        if (usr == null)
-            return (false, new List<string> { _mensajeDb.MensajeNoEncontrado(MODELO) });
-        (isValidFk, errores) = _fkCheck.FkUsuarioArea(usuarioArea);
-        if (!isValidFk)
-            return (isValidFk, errores);
-        _mapper.Map(usuarioArea, usr);
-        await _context.SaveChangesAsync();
-        return (isValidFk, errores);
-    }
+
 
     private IQueryable<UsuarioAreaTablaDTOs> GetUsuarioAreaQuery()
     {
@@ -78,4 +62,5 @@ public class UsuarioAreaService : IUsuarioAreaService
                    activo = ua.Activo
                 };
     }
+
 }

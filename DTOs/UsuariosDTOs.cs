@@ -31,6 +31,7 @@ public class UsuariosModificarDTO
     public int idRol { get; set; }
 
     public string telefono { get; set; } = string.Empty;
+    public List<int> idAreas {get; set;} = new();
 
     
 }

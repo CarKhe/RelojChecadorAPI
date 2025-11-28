@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("relojChecadorAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f4ee9101351e8ffa59b6887d85e00d255178067d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7ca6f22e14dcc51638a6de1daf6347e8a44de1ab")]
 [assembly: System.Reflection.AssemblyProductAttribute("relojChecadorAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("relojChecadorAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
