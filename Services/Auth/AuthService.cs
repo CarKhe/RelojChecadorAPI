@@ -62,13 +62,15 @@ public class AuthService : IAuthService
     private IQueryable<UserAuthLoginDTO> LoginQuery(LoginDTO usuario)
     {
         return from u in _context.TblUsuarios
+            join r in _context.TblRoles on u.IdRol equals r.IdRol
             where u.Telefono == usuario.telefono
             && u.PasswordHash == usuario.passwordHash
             select new UserAuthLoginDTO
             {
                 idUser = (int)u.IdUsuario,
                 nombre = u.Nombre,
-                idRol = (int)u.IdRol
+                idRol = (int)u.IdRol,
+                rol = r.RolName.ToLower()
             };
     }
 

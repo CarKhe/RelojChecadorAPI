@@ -13,7 +13,7 @@ namespace MyApp.Namespace
         {
             _service = service;   
         }
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> LoginUser([FromBody] LoginDTO usuario)
         {
             if (usuario is null)
@@ -25,16 +25,14 @@ namespace MyApp.Namespace
 
             string token = _service.GenerarToken(user);
 
-            return Ok(new
+            var response = new AuthResponseDTO
             {
-                token,
-                user = new {
-                    user.idUser,
-                    user.nombre,
-                    user.idRol
-                }
-            });
-            
+                Token = token,
+                User = user
+            };
+
+            return Ok(response);
+                    
         }
     }
 }
