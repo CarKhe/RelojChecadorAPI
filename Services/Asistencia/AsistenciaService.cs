@@ -38,28 +38,35 @@ public class AsistenciaService : IAsistenciaService
     public async Task<(bool isSuccess, List<string> errores)> PostAsistencia([FromBody] AsistenciaCrearDto asistenciaCrear)
     {
         //Obtener las Areas Asignadas del Cliente
+        List<int> areasAsignadas = AreasAsignadas(asistenciaCrear.idUsuario);
 
+        foreach (int areaRevision in areasAsignadas)
+        {
+            asistenciaCrear.idArea = areaRevision;
 
-        //Verificar si el usuario y Area existen
-        var (isValidFk, errores) = _fkCheck.FkUsuarioAreaAsistencia(asistenciaCrear);
-        if (!isValidFk)
+            //Verificar si el usuario y Area existen
+            var (isValidFk, errores) = _fkCheck.FkUsuarioAreaAsistencia(asistenciaCrear);
+            if (!isValidFk)
+                continue;
+
+            //verificar si en la tabla de tbl_UsuarioArea existe la relacion
+            bool relacion = IssetUsuarioArea(asistenciaCrear);
+            if (!relacion)
+                continue;
+
+            //verificar si la latitud y longitud seleccionadas estan dentro del rango del area
+            ulong dentroZona = DentroZona(asistenciaCrear);
+            if(dentroZona != 1UL)
+                continue;
+
+            var valorGuardar = _mapper.Map<TblAsistencium>(asistenciaCrear);
+            valorGuardar.DentroZona = dentroZona;
+
+            _context.Add(valorGuardar);
+            await _context.SaveChangesAsync();
             return (isValidFk, errores);
-        //verificar si en la tabla de tbl_UsuarioArea existe la relacion
-        bool relacion = IssetUsuarioArea(asistenciaCrear);
-        if (!relacion)
-            return (false, errores);
-        //obtener latitud, longitud y area centro del la tabla de Areas
-        
-        //verificar si la latitud y longitud seleccionadas estan dentro del rango del area
-        ulong dentroZona = DentroZona(asistenciaCrear);
-
-        var valorGuardar = _mapper.Map<TblAsistencium>(asistenciaCrear);
-        valorGuardar.DentroZona = dentroZona;
-
-        _context.Add(valorGuardar);
-        await _context.SaveChangesAsync();
-        return (isValidFk, errores);
-
+        }
+        return (false, ["Fuera de Rango de cualquier Area"]);
     }
 
 
@@ -144,7 +151,18 @@ public class AsistenciaService : IAsistenciaService
         return ( from a in _context.TblUsuarioAreas
             where a.IdArea == asistencia.idArea
             && a.IdUsuario == asistencia.idUsuario
+            && a.Activo == 1
             select a).Any();
+    }
+
+    private List<int> AreasAsignadas(long id)
+    {
+        var query = from ua in _context.TblUsuarioAreas
+            where ua.IdUsuario == id
+            && ua.Activo == 1
+            select (int)ua.IdArea;
+
+        return query.ToList();
     }
 
     
