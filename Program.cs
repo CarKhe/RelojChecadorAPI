@@ -1,8 +1,39 @@
+using System.Text;
 using relojChecadorAPI;
 using relojChecadorAPI.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ---- JWT ---- //
+var jwtConfig = builder.Configuration.GetSection("Jwt");
+var keyString = jwtConfig["Key"] ?? throw new Exception("JWT Key not found in configuration.");
+var key = Encoding.UTF8.GetBytes(keyString);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtConfig["Issuer"],
+        ValidAudience = jwtConfig["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
+
+// ---- JWT ---- //
+
+builder.Services.AddAuthorization();
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -17,6 +48,7 @@ builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IFkCheck, FkCheck>();
 builder.Services.AddScoped<ISyntaxisDB, SyntaxisDB>();
 builder.Services.AddScoped<IMensajesDB,MensajesDB>();
+builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 //Politicas CORS 
@@ -44,6 +76,8 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AngularPolicy");
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

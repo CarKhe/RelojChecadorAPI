@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using relojChecadorAPI;
@@ -48,6 +49,7 @@ namespace MyApp.Namespace
             return Ok(new { Mensaje = _mensajeDB.MensajeModificarDB(MODELO, 0) });
         }
 
+        [Authorize(Roles = "ADMIN")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> ToogleUser(long id)
         {
