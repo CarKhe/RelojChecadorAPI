@@ -8,5 +8,8 @@ public interface IAsistenciaService
 
     Task<IEnumerable<AsistenciaToDashboard>> GetLastAsistencias(int cant);
 
+    Task<int> GetLastAsistenciaStatus(LastRegisterDTO lastRegister);
+
     Task<(bool isSuccess, List<string> errores)> PostAsistencia([FromBody] AsistenciaCrearDto asistenciaCrear);
+
 }

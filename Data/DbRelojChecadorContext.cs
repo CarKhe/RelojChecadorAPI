@@ -86,13 +86,16 @@ public partial class DbRelojChecadorContext : DbContext
                 .HasColumnName("dentroZona");
             entity.Property(e => e.DistanciaCentro)
                 .HasPrecision(10, 2)
+                .HasDefaultValueSql("'1.00'")
                 .HasColumnName("distanciaCentro");
             entity.Property(e => e.FechaHora)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")
                 .HasColumnName("fechaHora");
             entity.Property(e => e.IdArea).HasColumnName("idArea");
-            entity.Property(e => e.IdMovimiento).HasColumnName("idMovimiento");
+            entity.Property(e => e.IdMovimiento)
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("idMovimiento");
             entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
             entity.Property(e => e.Latitud)
                 .HasPrecision(10, 7)
@@ -157,6 +160,9 @@ public partial class DbRelojChecadorContext : DbContext
             entity.Property(e => e.Correo)
                 .HasMaxLength(100)
                 .HasColumnName("correo");
+            entity.Property(e => e.DeviceUuid)
+                .HasMaxLength(100)
+                .HasColumnName("deviceUUID");
             entity.Property(e => e.FechaCreacion)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")

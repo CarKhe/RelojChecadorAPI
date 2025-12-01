@@ -24,6 +24,8 @@ public partial class TblUsuario
 
     public ulong Activo { get; set; }
 
+    public string? DeviceUuid { get; set; }
+
     public virtual TblRole IdRolNavigation { get; set; } = null!;
 
     public virtual ICollection<TblAsistencium> TblAsistencia { get; set; } = new List<TblAsistencium>();

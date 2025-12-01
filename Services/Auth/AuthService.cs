@@ -20,6 +20,21 @@ public class AuthService : IAuthService
     }
     public async Task<UserAuthLoginDTO?> Login(LoginDTO usuario)
     {
+        var user = await _context.TblUsuarios
+            .FirstOrDefaultAsync(u => u.Telefono == usuario.telefono && u.PasswordHash == usuario.passwordHash);
+        
+        if (user == null) return null; 
+
+        if(user.DeviceUuid == null)
+        {
+            user.DeviceUuid = usuario.deviceUUID;
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            if (user.DeviceUuid != usuario.deviceUUID) return null;
+        }
+
         return await LoginQuery(usuario).FirstOrDefaultAsync();
     }
 

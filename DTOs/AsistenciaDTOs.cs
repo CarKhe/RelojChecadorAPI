@@ -48,3 +48,8 @@ public class AreaDto
     public decimal longitudCentral { get; set; }
     public int radio { get; set; }
 }
+
+public class LastRegisterDTO
+{
+    public int idUsuario {get; set;}
+}

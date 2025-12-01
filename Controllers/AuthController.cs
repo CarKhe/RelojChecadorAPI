@@ -21,7 +21,10 @@ namespace MyApp.Namespace
 
             var user = await _service.Login(usuario);
             if (user is null)
-                return Unauthorized("Credenciales inválidas");
+                return Unauthorized(new
+                {
+                    mensaje = "Credenciales inválidas o Dispositivio No enlazado a Usuario"
+                });
 
             string token = _service.GenerarToken(user);
 

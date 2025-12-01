@@ -35,6 +35,13 @@ public class AsistenciaService : IAsistenciaService
         return await query.ToListAsync();
     }
 
+    public async Task<int> GetLastAsistenciaStatus(LastRegisterDTO lastRegister)
+    {
+        var lastStatus = await GetLastAsistenciaStatus(lastRegister.idUsuario);
+        if (lastStatus == null) return 99;
+        return lastStatus.Value;
+    }
+
     public async Task<(bool isSuccess, List<string> errores)> PostAsistencia([FromBody] AsistenciaCrearDto asistenciaCrear)
     {
         //Obtener las Areas Asignadas del Cliente
@@ -164,6 +171,17 @@ public class AsistenciaService : IAsistenciaService
 
         return query.ToList();
     }
+
+    private async Task<int?> GetLastAsistenciaStatus(int idUser)
+    {
+        return await _context.TblAsistencia
+            .Where(a => a.IdUsuario == idUser && a.DentroZona == 1)
+            .OrderByDescending(a => a.IdAsistencia)
+            .Select(a => (int?)a.IdMovimiento)
+            .FirstOrDefaultAsync();
+    }
+
+
 
     
 

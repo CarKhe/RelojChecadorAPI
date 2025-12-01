@@ -47,5 +47,13 @@ namespace MyApp.Namespace
             }
             return Ok(new { Mensaje = _mensajeDB.MensajeModificarDB(MODELO,0) });
         }
+
+        [HttpPost("lastStatus")]
+        public async Task<IActionResult> GetLastStatus([FromBody]LastRegisterDTO lastRegister)
+        {
+            int status = await _service.GetLastAsistenciaStatus(lastRegister);
+            if(status == 99) status = 1;
+            return Ok(status);
+        }
     }
 }

@@ -4,6 +4,7 @@ public class LoginDTO
 {
     public string telefono { get; set; } = string.Empty;
     public string passwordHash { get; set; } = string.Empty;
+    public string deviceUUID {get; set;} = string.Empty;
 }
 
 public class UserAuthLoginDTO
