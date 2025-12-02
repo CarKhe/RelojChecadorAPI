@@ -180,6 +180,8 @@ public class UsuariosService : IUsuariosService
     {
         return from u in _context.TblUsuarios
                join r in _context.TblRoles on u.IdRol equals r.IdRol
+               orderby u.IdRol ascending 
+               orderby u.Activo descending 
                select new UsuariosTablaDTOs
                {
                     id = u.IdUsuario,
