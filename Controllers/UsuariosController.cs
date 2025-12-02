@@ -60,6 +60,15 @@ namespace MyApp.Namespace
             return Ok(new { Mensaje = _mensajeDB.MensajeModificarDB(MODELO, 1) });
         }
 
+        [HttpDelete("deleteUUID/{id}")]
+        public async Task<IActionResult> DeleteUUID(long id)
+        {
+            var result = await _service.DeleteUUID(id);
+            if (!result)
+                return NotFound(new { Mensaje = _mensajeDB.MensajeNoEncontrado(MODELO) });
+            return Ok(new { Mensaje = _mensajeDB.MensajeModificarDB(MODELO, 4) });
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEquipo(long id, [FromBody] UsuariosCrearDTOs usuarios)
         {

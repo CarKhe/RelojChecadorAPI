@@ -21,7 +21,8 @@ public class AuthService : IAuthService
     public async Task<UserAuthLoginDTO?> Login(LoginDTO usuario)
     {
         var user = await _context.TblUsuarios
-            .FirstOrDefaultAsync(u => u.Telefono == usuario.telefono && u.PasswordHash == usuario.passwordHash);
+            .FirstOrDefaultAsync(u => u.Telefono == usuario.telefono 
+            && u.PasswordHash == usuario.passwordHash && u.Activo == 1);
         
         if (user == null) return null; 
 

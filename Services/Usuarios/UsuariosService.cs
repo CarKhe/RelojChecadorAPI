@@ -101,6 +101,14 @@ public class UsuariosService : IUsuariosService
         return true;
 
     }
+    public async Task<bool> DeleteUUID(long id)
+    {
+        var usuario = await _context.TblUsuarios.FindAsync(id);
+        if (usuario == null) return false;
+        usuario.DeviceUuid = null;
+        await _context.SaveChangesAsync();
+        return true;
+    }
 
     public async Task<(bool isSuccess, List<string> errores)> UpdateUser(long id, UsuariosCrearDTOs usuario)
     {
@@ -202,8 +210,6 @@ public class UsuariosService : IUsuariosService
                             .ToList()
                 };
     }
-
-
 
 
 }

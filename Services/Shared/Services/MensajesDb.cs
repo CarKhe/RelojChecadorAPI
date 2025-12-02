@@ -7,7 +7,8 @@ public class MensajesDB : IMensajesDB
         "CREADO",
         "SUSPENDIDO",
         "ELIMINADO",
-        "MODIFICADO"
+        "MODIFICADO",
+        "LIBERADO"
     };
 
     public string LlaveForaneaNoExiste(string entidad)
