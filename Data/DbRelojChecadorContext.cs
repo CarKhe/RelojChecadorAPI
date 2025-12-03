@@ -21,6 +21,12 @@ public partial class DbRelojChecadorContext : DbContext
 
     public virtual DbSet<TblAsistencium> TblAsistencia { get; set; }
 
+    public virtual DbSet<TblDetalleHorarioPlantilla> TblDetalleHorarioPlantillas { get; set; }
+
+    public virtual DbSet<TblEmpleadoHorario> TblEmpleadoHorarios { get; set; }
+
+    public virtual DbSet<TblHorarioPlantilla> TblHorarioPlantillas { get; set; }
+
     public virtual DbSet<TblRole> TblRoles { get; set; }
 
     public virtual DbSet<TblTipoMovimiento> TblTipoMovimientos { get; set; }
@@ -118,6 +124,102 @@ public partial class DbRelojChecadorContext : DbContext
                 .HasForeignKey(d => d.IdUsuario)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("tbl_Asistencia_tbl_Usuarios_FK");
+        });
+
+        modelBuilder.Entity<TblDetalleHorarioPlantilla>(entity =>
+        {
+            entity.HasKey(e => e.IdDetalleHorarioPlantilla).HasName("PRIMARY");
+
+            entity.ToTable("tbl_DetalleHorarioPlantilla", tb => tb.HasComment("Detalle de la plantilla de horarios"));
+
+            entity.HasIndex(e => e.IdHorarioPlantilla, "tbl_DetalleHorarioPlantilla_tbl_HorarioPlantilla_FK");
+
+            entity.HasIndex(e => e.IdMovimiento, "tbl_DetalleHorarioPlantilla_tbl_TipoMovimiento_FK");
+
+            entity.Property(e => e.IdDetalleHorarioPlantilla).HasColumnName("idDetalleHorarioPlantilla");
+            entity.Property(e => e.Activo)
+                .HasDefaultValueSql("b'1'")
+                .HasColumnType("bit(1)")
+                .HasColumnName("activo");
+            entity.Property(e => e.DiaSemana).HasColumnName("diaSemana");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp")
+                .HasColumnName("fechaCreacion");
+            entity.Property(e => e.Hora)
+                .HasColumnType("time")
+                .HasColumnName("hora");
+            entity.Property(e => e.IdHorarioPlantilla).HasColumnName("idHorarioPlantilla");
+            entity.Property(e => e.IdMovimiento).HasColumnName("idMovimiento");
+            entity.Property(e => e.Laboral)
+                .HasDefaultValueSql("b'1'")
+                .HasColumnType("bit(1)")
+                .HasColumnName("laboral");
+            entity.Property(e => e.MargenAntes).HasColumnName("margenAntes");
+            entity.Property(e => e.MargenDespues).HasColumnName("margenDespues");
+
+            entity.HasOne(d => d.IdHorarioPlantillaNavigation).WithMany(p => p.TblDetalleHorarioPlantillas)
+                .HasForeignKey(d => d.IdHorarioPlantilla)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("tbl_DetalleHorarioPlantilla_tbl_HorarioPlantilla_FK");
+
+            entity.HasOne(d => d.IdMovimientoNavigation).WithMany(p => p.TblDetalleHorarioPlantillas)
+                .HasForeignKey(d => d.IdMovimiento)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("tbl_DetalleHorarioPlantilla_tbl_TipoMovimiento_FK");
+        });
+
+        modelBuilder.Entity<TblEmpleadoHorario>(entity =>
+        {
+            entity.HasKey(e => e.IdEmpleadoHorario).HasName("PRIMARY");
+
+            entity.ToTable("tbl_EmpleadoHorario", tb => tb.HasComment("Registro que empleado esta asignado a que plantilla asignadoa"));
+
+            entity.HasIndex(e => e.IdHorarioPlantilla, "tbl_EmpleadoHorario_tbl_HorarioPlantilla_FK");
+
+            entity.HasIndex(e => e.IdUsuario, "tbl_EmpleadoHorario_tbl_Usuarios_FK");
+
+            entity.Property(e => e.IdEmpleadoHorario).HasColumnName("idEmpleadoHorario");
+            entity.Property(e => e.Activo)
+                .HasDefaultValueSql("b'0'")
+                .HasColumnType("bit(1)")
+                .HasColumnName("activo");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fechaCreacion");
+            entity.Property(e => e.IdHorarioPlantilla).HasColumnName("idHorarioPlantilla");
+            entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
+
+            entity.HasOne(d => d.IdHorarioPlantillaNavigation).WithMany(p => p.TblEmpleadoHorarios)
+                .HasForeignKey(d => d.IdHorarioPlantilla)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("tbl_EmpleadoHorario_tbl_HorarioPlantilla_FK");
+
+            entity.HasOne(d => d.IdUsuarioNavigation).WithMany(p => p.TblEmpleadoHorarios)
+                .HasForeignKey(d => d.IdUsuario)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("tbl_EmpleadoHorario_tbl_Usuarios_FK");
+        });
+
+        modelBuilder.Entity<TblHorarioPlantilla>(entity =>
+        {
+            entity.HasKey(e => e.IdHorarioPlantilla).HasName("PRIMARY");
+
+            entity.ToTable("tbl_HorarioPlantilla", tb => tb.HasComment("tabla para crear plantilla de horarios para asistencias de usuarios"));
+
+            entity.Property(e => e.IdHorarioPlantilla).HasColumnName("idHorarioPlantilla");
+            entity.Property(e => e.Activo)
+                .HasDefaultValueSql("b'1'")
+                .HasColumnType("bit(1)")
+                .HasColumnName("activo");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp")
+                .HasColumnName("fechaCreacion");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .HasColumnName("nombre");
         });
 
         modelBuilder.Entity<TblRole>(entity =>

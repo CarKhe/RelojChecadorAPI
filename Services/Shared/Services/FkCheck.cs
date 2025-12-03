@@ -52,12 +52,25 @@ public class FkCheck : IFkCheck
         if(!isValid)
             return (isValid, errores);
         if (!AreaExiste(asistencia.idArea))
-                errores.Add(_mensajeDB.LlaveForaneaNoExiste("AREA"));
+            errores.Add(_mensajeDB.LlaveForaneaNoExiste("AREA"));
         if (!UsuarioExiste(asistencia.idUsuario))
             errores.Add(_mensajeDB.LlaveForaneaNoExiste("USUARIO"));
         errores.AddRange(errores1);
         isValid = errores.Any() ? false : true;
         return (isValid, errores);
+    }
+
+    public (bool isValid, List<string>) FkPlantillaHorario(DetalleHorarioPlantillaCrearDto detalle)
+    {
+        bool isValid;
+        var errores = new List<string>();
+        if(!HorarioPlantillaExiste(detalle.idHorarioPlantilla))
+            errores.Add(_mensajeDB.LlaveForaneaNoExiste("HORARIO PLANTILLA"));
+        if(!MovimientoExiste(detalle.idMovimiento))
+            errores.Add(_mensajeDB.LlaveForaneaNoExiste("MOVIMIENTO"));
+        isValid = errores.Any() ? false : true;
+        return (isValid,errores);
+
     }
 
     private bool RolExiste(long id)
@@ -75,6 +88,11 @@ public class FkCheck : IFkCheck
     private bool MovimientoExiste(long id)
     {
         return _context.TblTipoMovimientos.Any(m => m.IdMovimiento == id);
+    }
+
+    private bool HorarioPlantillaExiste(long id)
+    {
+        return _context.TblHorarioPlantillas.Any(hp => hp.IdHorarioPlantilla == id);
     }
 
 

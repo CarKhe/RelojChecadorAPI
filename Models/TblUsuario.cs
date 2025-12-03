@@ -30,5 +30,7 @@ public partial class TblUsuario
 
     public virtual ICollection<TblAsistencium> TblAsistencia { get; set; } = new List<TblAsistencium>();
 
+    public virtual ICollection<TblEmpleadoHorario> TblEmpleadoHorarios { get; set; } = new List<TblEmpleadoHorario>();
+
     public virtual ICollection<TblUsuarioArea> TblUsuarioAreas { get; set; } = new List<TblUsuarioArea>();
 }

@@ -12,6 +12,8 @@ public class AutoMapperProfiles : Profile
         MapperArea();
         MapperUsuarioArea();
         MapperAsistencia();
+        MapperHorarioPlantilla();
+        MapperDetalleHorarioPlantilla();
     }
 
     private void MapperUsuarios()
@@ -29,5 +31,15 @@ public class AutoMapperProfiles : Profile
     private void MapperAsistencia()
     {
         CreateMap<AsistenciaCrearDto,TblAsistencium>();
+    }
+
+    private void MapperHorarioPlantilla()
+    {
+        CreateMap<HorarioPlantillaCrearDto,TblHorarioPlantilla>();
+    }
+
+    private void MapperDetalleHorarioPlantilla()
+    {
+        CreateMap<DetalleHorarioPlantillaCrearDto,TblDetalleHorarioPlantilla>();
     }
 }

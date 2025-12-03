@@ -76,7 +76,6 @@ namespace MyApp.Namespace
             if (!isSuccess)
                 return BadRequest(new { Mensaje = "Error al actualizar el equipo.", Errores = errores });
             return Ok(new { Mensaje = _mensajeDB.MensajeModificarDB(MODELO,3) });
-
         }
     }
 }
