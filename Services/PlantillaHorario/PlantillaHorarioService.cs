@@ -14,7 +14,6 @@ public class PlantillaHorarioService : IPlantillaHorarioService
     private readonly IFkCheck _fkCheck;
     private readonly ISyntaxisDB _syntaxisDB;
     private readonly IMensajesDB _mensajeDB;
-    private static string MODELO = "HORARIO PLANTILLA";
     public PlantillaHorarioService(DbRelojChecadorContext context, IMapper mapper,
             IFkCheck fkCheck, ISyntaxisDB syntaxisDB, IMensajesDB mensajesDB)
     {
@@ -28,6 +27,11 @@ public class PlantillaHorarioService : IPlantillaHorarioService
     public async Task<IEnumerable<HorarioPlantillaTablaDto>> GetPlantillas()
     {
         var query = GetPlantillasQuery();
+        return await query.ToListAsync();
+    }
+    public async Task<IEnumerable<HorarioPlantillaTablaDto>> GetOnePlantilla(long id)
+    {
+        var query = GetPlantillaByID(id);
         return await query.ToListAsync();
     }
 
@@ -76,58 +80,60 @@ public class PlantillaHorarioService : IPlantillaHorarioService
         return true;
     }
 
-    public async Task<(bool isSuccess, List<string> errores)> UpdateHorarioPlantilla(long id, [FromBody] HorarioPlantillaCrearDto horarioPlantilla)
+    public async Task<(bool isSuccess, List<string> errores)> 
+        UpdateHorarioPlantilla(long id, [FromBody] HorarioPlantillaCrearDto horarioPlantilla)
     {
         bool isValidFk;
         List<string> errores;
+
         using var trx = await _context.Database.BeginTransactionAsync();
         try
         {
-            var plantilla = await _context.TblHorarioPlantillas.FindAsync(id);
+            var plantilla = await _context.TblHorarioPlantillas
+                .Include(p => p.TblDetalleHorarioPlantillas)
+                .FirstOrDefaultAsync(p => p.IdHorarioPlantilla == id);
+
             if (plantilla == null)
-                return (false, new List<string> { _mensajeDB.MensajeNoEncontrado(MODELO) });
-            var horarioPlantillaMap = _mapper.Map<TblHorarioPlantilla>(horarioPlantilla);
-            plantilla.Nombre = _syntaxisDB.StringUpper(plantilla.Nombre);
+                return (false, new List<string> { _mensajeDB.MensajeNoEncontrado("HorarioPlantilla") });
+
+            // ====== UPDATE encabezado ======
+            plantilla.Nombre = _syntaxisDB.StringUpper(horarioPlantilla.nombre);
             await _context.SaveChangesAsync();
 
-            foreach (DetalleHorarioPlantillaCrearDto detalle in horarioPlantilla.detalleHorarioPlantillaCrear)
+            // ====== DELETE FÍSICO DE TODOS LOS DETALLES ======
+            _context.TblDetalleHorarioPlantillas.RemoveRange(plantilla.TblDetalleHorarioPlantillas);
+            await _context.SaveChangesAsync();
+
+            // ====== REINSERTAR DETALLES ======
+            foreach (var detalle in horarioPlantilla.detalleHorarioPlantillaCrear)
             {
-                if(detalle.idHorarioPlantilla > 0)
-                {
-                    // UPDATE
-                    var detalleExistente = plantilla.TblDetalleHorarioPlantillas
-                        .FirstOrDefault(d => d.IdDetalleHorarioPlantilla == detalle.idHorarioPlantilla);
+                detalle.idHorarioPlantilla = id;
 
-                    if (detalleExistente == null)
-                    {
-                        await trx.RollbackAsync();
-                        return (false, new List<string> { "El detalle no existe pero se envió un ID." });
-                    }
-
-                    _mapper.Map(detalle, detalleExistente);
-                }
-                else
+                (isValidFk, errores) = _fkCheck.FkPlantillaHorario(detalle);
+                if (!isValidFk)
                 {
-                    detalle.idHorarioPlantilla = id;
-                    (isValidFk, errores) = _fkCheck.FkPlantillaHorario(detalle);
-                    if (!isValidFk){
-                        await trx.RollbackAsync();
-                        return (false,errores);          
-                    }
-                    var detalleHorarioPlantillaMap = _mapper.Map<TblDetalleHorarioPlantilla>(detalle);
-                    _context.Add(detalleHorarioPlantillaMap);
+                    await trx.RollbackAsync();
+                    return (false, errores);
                 }
+
+                var detalleNuevo = _mapper.Map<TblDetalleHorarioPlantilla>(detalle);
+                detalleNuevo.Activo = 1UL;
+
+                _context.TblDetalleHorarioPlantillas.Add(detalleNuevo);
             }
 
+            await _context.SaveChangesAsync();
             await trx.CommitAsync();
-            return (true,[]);
+            return (true, new List<string>());
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             await trx.RollbackAsync();
-            return (false, new List<string> { ex.Message});
+            return (false, new List<string> { ex.Message });
         }
     }
+
+
 
     private IQueryable<HorarioPlantillaTablaDto> GetPlantillasQuery()
     {
@@ -163,5 +169,39 @@ public class PlantillaHorarioService : IPlantillaHorarioService
             };
     }
 
+    private IQueryable<HorarioPlantillaTablaDto> GetPlantillaByID(long id)
+    {
+        return
+            from hp in _context.TblHorarioPlantillas
+            join dhp in _context.TblDetalleHorarioPlantillas
+                on hp.IdHorarioPlantilla equals dhp.IdHorarioPlantilla into detalles
+            where hp.IdHorarioPlantilla == id 
+            select new HorarioPlantillaTablaDto
+            {
+                idHorarioPlantilla = (int)hp.IdHorarioPlantilla,
+                nombre = hp.Nombre,
+                activo = hp.Activo,
+                detalleHorarioPlantillaTabla =
+                    detalles
+                        .Where(d => d.Activo == 1)
+                        .Join(
+                            _context.TblTipoMovimientos,
+                            d => d.IdMovimiento,
+                            m => m.IdMovimiento,
+                            (d, m) => new DetalleHorarioPlantillaTablaDto
+                            {
+                                idHorarioPlantilla = d.IdHorarioPlantilla,
+                                movimiento = m.Movimiento,
+                                diaSemana = d.DiaSemana,
+                                hora = d.Hora,
+                                margenAntes = d.MargenAntes,
+                                margenDespues = d.MargenDespues,
+                                laboral = d.Laboral,
+                                activo = d.Activo
+                            }
+                        )
+                        .ToList()
+            };       
+    }
 
 }

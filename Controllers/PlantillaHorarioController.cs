@@ -25,6 +25,14 @@ namespace MyApp.Namespace
             return Ok(plantillas);
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<IEnumerable<UsuariosModificarDTO>>> GetOnePlantilla(long id)
+        {
+            var usuario =  await _service.GetOnePlantilla(id);
+            if(!usuario.Any()) return NotFound(new { Mensaje = _mensajeDB.MensajeNoEncontrado(MODELO) });
+            return Ok(usuario.FirstOrDefault());
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostHorarioPlantilla([FromBody] HorarioPlantillaCrearDto horarioPlantilla)
         {
