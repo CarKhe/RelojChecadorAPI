@@ -46,6 +46,7 @@ builder.Services.AddScoped<IUsuarioAreaService, UsuarioAreaService>();
 builder.Services.AddScoped<IAsistenciaService,AsistenciaService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<IPlantillaHorarioService,PlantillaHorarioService>();
+builder.Services.AddScoped<IDownloadsService,DownloadsService>();
 builder.Services.AddScoped<IFkCheck, FkCheck>();
 builder.Services.AddScoped<ISyntaxisDB, SyntaxisDB>();
 builder.Services.AddScoped<IMensajesDB,MensajesDB>();

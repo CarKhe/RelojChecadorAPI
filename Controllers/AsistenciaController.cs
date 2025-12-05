@@ -51,8 +51,8 @@ namespace MyApp.Namespace
         [HttpPost("lastStatus")]
         public async Task<IActionResult> GetLastStatus([FromBody]LastRegisterDTO lastRegister)
         {
-            int status = await _service.GetLastAsistenciaStatus(lastRegister);
-            if(status == 99) status = 1;
+            LastRegisterReturnDTO status = await _service.GetLastAsistenciaStatus(lastRegister);
+            if(status.status == 99) status.status = 1;
             return Ok(status);
         }
     }

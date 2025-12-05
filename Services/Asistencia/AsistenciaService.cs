@@ -35,11 +35,18 @@ public class AsistenciaService : IAsistenciaService
         return await query.ToListAsync();
     }
 
-    public async Task<int> GetLastAsistenciaStatus(LastRegisterDTO lastRegister)
+    public async Task<LastRegisterReturnDTO> GetLastAsistenciaStatus(LastRegisterDTO lastRegister)
     {
-        var lastStatus = await GetLastAsistenciaStatus(lastRegister.idUsuario);
-        if (lastStatus == null) return 99;
-        return lastStatus.Value;
+        LastRegisterReturnDTO? lastStatus = await GetLastAsistenciaStatus(lastRegister.idUsuario);
+        if (lastStatus == null)
+        {
+            return new LastRegisterReturnDTO
+            {
+                status = 99,
+                date = null 
+            };
+        }
+        return lastStatus;
     }
 
     public async Task<(bool isSuccess, List<string> errores)> PostAsistencia([FromBody] AsistenciaCrearDto asistenciaCrear)
@@ -172,12 +179,16 @@ public class AsistenciaService : IAsistenciaService
         return query.ToList();
     }
 
-    private async Task<int?> GetLastAsistenciaStatus(int idUser)
+    private async Task<LastRegisterReturnDTO?> GetLastAsistenciaStatus(int idUser)
     {
         return await _context.TblAsistencia
             .Where(a => a.IdUsuario == idUser && a.DentroZona == 1)
             .OrderByDescending(a => a.IdAsistencia)
-            .Select(a => (int?)a.IdMovimiento)
+            .Select(a => new LastRegisterReturnDTO
+            {
+                status = (int)a.IdMovimiento,
+                date = a.FechaHora 
+            })
             .FirstOrDefaultAsync();
     }
 

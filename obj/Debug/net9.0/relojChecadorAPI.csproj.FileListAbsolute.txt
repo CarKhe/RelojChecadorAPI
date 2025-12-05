@@ -141,3 +141,11 @@
 /Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 /Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
 /Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/ClosedXML.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/ClosedXML.Parser.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/DocumentFormat.OpenXml.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/DocumentFormat.OpenXml.Framework.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/ExcelNumberFormat.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/RBush.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/SixLabors.Fonts.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/System.IO.Packaging.dll

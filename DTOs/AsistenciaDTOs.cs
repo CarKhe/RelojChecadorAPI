@@ -53,3 +53,9 @@ public class LastRegisterDTO
 {
     public int idUsuario {get; set;}
 }
+
+public class LastRegisterReturnDTO
+{
+    public int status { get; set; }
+    public DateTime? date { get; set; }
+}
