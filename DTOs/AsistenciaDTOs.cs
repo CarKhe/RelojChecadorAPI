@@ -56,6 +56,6 @@ public class LastRegisterDTO
 
 public class LastRegisterReturnDTO
 {
-    public int status { get; set; }
+    public int movimiento { get; set; }
     public DateTime? date { get; set; }
 }

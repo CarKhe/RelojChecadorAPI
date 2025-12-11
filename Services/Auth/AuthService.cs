@@ -13,18 +13,24 @@ public class AuthService : IAuthService
 {
     private readonly DbRelojChecadorContext _context;
     private readonly IConfiguration _config;
-    public AuthService(DbRelojChecadorContext context, IConfiguration config)
+    private readonly IHashingService _hash;
+    public AuthService(DbRelojChecadorContext context, IConfiguration config,
+                        IHashingService hash)
     {
         _context = context;
         _config = config;
+        _hash = hash;
     }
     public async Task<UserAuthLoginDTO?> Login(LoginDTO usuario)
     {
         var user = await _context.TblUsuarios
             .FirstOrDefaultAsync(u => u.Telefono == usuario.telefono 
-            && u.PasswordHash == usuario.passwordHash && u.Activo == 1);
-        
+             && u.Activo == 1);
+            
         if (user == null) return null; 
+
+        bool passwordCorrecta = _hash.Verify(usuario.passwordHash, user.PasswordHash);
+        if(!passwordCorrecta) return null;
 
         if(user.DeviceUuid == null)
         {
@@ -80,7 +86,6 @@ public class AuthService : IAuthService
         return from u in _context.TblUsuarios
             join r in _context.TblRoles on u.IdRol equals r.IdRol
             where u.Telefono == usuario.telefono
-            && u.PasswordHash == usuario.passwordHash
             select new UserAuthLoginDTO
             {
                 idUser = (int)u.IdUsuario,
@@ -90,11 +95,11 @@ public class AuthService : IAuthService
             };
     }
 
-private string? GetRoleNameByID(int idRol)
-{
-    return _context.TblRoles
-        .Where(r => r.IdRol == idRol)
-        .Select(r => r.RolName)      
-        .FirstOrDefault();
-}
+    private string? GetRoleNameByID(int idRol)
+    {
+        return _context.TblRoles
+            .Where(r => r.IdRol == idRol)
+            .Select(r => r.RolName)      
+            .FirstOrDefault();
+    }
 }

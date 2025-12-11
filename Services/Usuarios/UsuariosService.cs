@@ -17,10 +17,11 @@ public class UsuariosService : IUsuariosService
     private readonly IFkCheck _fkCheck;
     private readonly IMensajesDB _mensajeDB;
     private readonly IUsuarioAreaService _usuarioAreaService;
+    public readonly IHashingService _hash;
     private static string MODELO = "USUARIO"; 
     public UsuariosService(DbRelojChecadorContext context, IMapper mapper,
             ISyntaxisDB syntaxisDB, IFkCheck fkCheck, IMensajesDB mensajesDB,
-            IUsuarioAreaService usuarioAreaService)
+            IUsuarioAreaService usuarioAreaService, IHashingService hash)
     {
         _context = context;
         _mapper = mapper;
@@ -28,6 +29,7 @@ public class UsuariosService : IUsuariosService
         _fkCheck = fkCheck;
         _mensajeDB = mensajesDB;
         _usuarioAreaService = usuarioAreaService;
+        _hash = hash;
     }
 
     public async Task<IEnumerable<UsuariosTablaDTOs>> GetUsuarios()
@@ -58,9 +60,16 @@ public class UsuariosService : IUsuariosService
 
         try
         {
+            bool telefonoExiste = await _context.TblUsuarios
+                .AnyAsync(u => u.Telefono == usuario.telefono);
+            if (telefonoExiste)
+            {
+                return (false, new List<string> { "El teléfono ya está registrado." });
+            }
             //Guardar Usuario
             var usuarioMap = _mapper.Map<TblUsuario>(usuario);
             usuarioMap.Nombre = _syntaxisDB.StringUpper(usuarioMap.Nombre);
+            usuarioMap.PasswordHash = _hash.Hash(usuario.passwordHash);
             _context.Add(usuarioMap);
             await _context.SaveChangesAsync();
 
@@ -124,6 +133,7 @@ public class UsuariosService : IUsuariosService
             return (false, new List<string> { _mensajeDB.MensajeNoEncontrado(MODELO) });
         _mapper.Map(usuario, usr);
         usr.Nombre = _syntaxisDB.StringUpper(usr.Nombre);
+        usr.PasswordHash = _hash.Hash(usuario.passwordHash);
         await _context.SaveChangesAsync();
 
         //Revision de las Areas
@@ -202,7 +212,6 @@ public class UsuariosService : IUsuariosService
                 {
                     id = Convert.ToInt32(u.IdUsuario),
                     nombre = u.Nombre,
-                    passwordHash = u.PasswordHash,
                     idRol = Convert.ToInt32(u.IdRol),
                     telefono = u.Telefono,
                     idAreas = _context.TblUsuarioAreas

@@ -42,7 +42,7 @@ public class AsistenciaService : IAsistenciaService
         {
             return new LastRegisterReturnDTO
             {
-                status = 99,
+                movimiento = 99,
                 date = null 
             };
         }
@@ -186,7 +186,7 @@ public class AsistenciaService : IAsistenciaService
             .OrderByDescending(a => a.IdAsistencia)
             .Select(a => new LastRegisterReturnDTO
             {
-                status = (int)a.IdMovimiento,
+                movimiento = (int)a.IdMovimiento,
                 date = a.FechaHora 
             })
             .FirstOrDefaultAsync();

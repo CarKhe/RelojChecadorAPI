@@ -51,6 +51,7 @@ builder.Services.AddScoped<IFkCheck, FkCheck>();
 builder.Services.AddScoped<ISyntaxisDB, SyntaxisDB>();
 builder.Services.AddScoped<IMensajesDB,MensajesDB>();
 builder.Services.AddScoped<IAuthService,AuthService>();
+builder.Services.AddScoped<IHashingService,HashingService>();
 builder.Services.AddAutoMapper(typeof(Program));
 
 //Politicas CORS 

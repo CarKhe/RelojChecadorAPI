@@ -52,7 +52,7 @@ namespace MyApp.Namespace
         public async Task<IActionResult> GetLastStatus([FromBody]LastRegisterDTO lastRegister)
         {
             LastRegisterReturnDTO status = await _service.GetLastAsistenciaStatus(lastRegister);
-            if(status.status == 99) status.status = 1;
+            if(status.movimiento == 99) status.movimiento = 1;
             return Ok(status);
         }
     }
