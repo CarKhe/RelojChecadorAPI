@@ -36,7 +36,10 @@ public partial class DbRelojChecadorContext : DbContext
     public virtual DbSet<TblUsuarioArea> TblUsuarioAreas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseMySql("name=ConnectionStrings:DefaultConnection", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"));
+        => optionsBuilder.UseMySql("name=ConnectionStrings:DefaultConnection", Microsoft.EntityFrameworkCore.ServerVersion.Parse("9.4.0-mysql"), options =>
+        {
+            options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+        });
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
