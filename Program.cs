@@ -78,7 +78,11 @@ if (app.Environment.IsDevelopment())
 //USO DE LAS CORS
 app.UseCors("AngularPolicy");
 
-app.UseHttpsRedirection();
+// Solo redirigir HTTPS en producción si hay certificados configurados
+if (!app.Environment.IsProduction())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 

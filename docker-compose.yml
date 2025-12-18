@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # API ASP.NET Core
   api:
@@ -11,6 +9,12 @@ services:
       ConnectionStrings__DefaultConnection: Server=relojchecador-dbrelojchecador-lkwo1x;Port=3306;Database=mysql;Uid=mysql;Pwd=rg4bjhszrgdruisa;
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
     ports:
-      - "5000:8080"
+      - "9000:8080"
     restart: always
+    volumes:
+      - aspnet_keys:/root/.aspnet/DataProtection-Keys
+
+volumes:
+  aspnet_keys:
