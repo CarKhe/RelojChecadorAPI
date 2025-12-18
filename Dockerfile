@@ -29,7 +29,7 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Exponer el puerto
-EXPOSE 3000
+EXPOSE 3005
 
 # Ejecutar la aplicación
 ENTRYPOINT ["dotnet", "relojChecadorAPI.dll"]
