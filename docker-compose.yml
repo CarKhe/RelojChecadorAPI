@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: reloj-checador-api
     environment:
-      ConnectionStrings__DefaultConnection: Server=relojchecador-dbrelojchecador-lkwo1x;Port=3306;Database=mysql;Uid=mysql;Pwd=rg4bjhszrgdruisa;
+      ConnectionStrings__DefaultConnection: Server=relojchecador-dbrelojchecador-lkwo1x;Port=3306;Database=mysql;Uid=mysql;Pwd=rg4bjhszrgdruisa;SslMode=None;AllowPublicKeyRetrieval=True;
       ASPNETCORE_ENVIRONMENT: Production
       ASPNETCORE_URLS: http://+:8080
       ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
