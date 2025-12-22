@@ -60,7 +60,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AngularPolicy", policy =>
     {
         policy
-            .WithOrigins("http://144.217.167.101:7676")
+            .WithOrigins("http://http://crclimasyrefacciones.com/:7676")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
