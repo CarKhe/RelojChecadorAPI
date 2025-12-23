@@ -3,7 +3,6 @@ using relojChecadorAPI;
 using relojChecadorAPI.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.HttpOverrides;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -76,16 +75,14 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwaggerUI();
 }
 
-// USO DE LAS CORS
+//USO DE LAS CORS
 app.UseCors("AngularPolicy");
 
-// Configuración para confiar en encabezados de proxy (X-Forwarded-Proto)
-app.UseForwardedHeaders(new ForwardedHeadersOptions
+// Solo redirigir HTTPS en producción si hay certificados configurados
+if (!app.Environment.IsProduction())
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedFor
-});
-
-// No forzar HTTPS internamente, el proxy inverso se encarga
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthentication();
 
