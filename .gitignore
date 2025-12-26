@@ -1,0 +1,2 @@
+# Ignorar archivo .env para evitar subir datos sensibles
+.env

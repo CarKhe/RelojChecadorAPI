@@ -1,3 +1,6 @@
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using DotNetEnv;
 using System.Text;
 using relojChecadorAPI;
 using relojChecadorAPI.Data;
@@ -7,10 +10,26 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ---- JWT ---- //
+// Cargar variables desde .env
+Env.Load();
+
+// ---- JWT, PEPPER, CONNECTION STRING ---- //
 var jwtConfig = builder.Configuration.GetSection("Jwt");
-var keyString = jwtConfig["Key"] ?? throw new Exception("JWT Key not found in configuration.");
-var key = Encoding.UTF8.GetBytes(keyString);
+var keyString = jwtConfig["Key"];
+if (keyString == "__JWT_KEY__")
+{
+    keyString = Environment.GetEnvironmentVariable("JWT_KEY") ?? throw new Exception("JWT_KEY env variable not found.");
+}
+var key = Encoding.UTF8.GetBytes(keyString ?? string.Empty);
+
+// Leer pepper desde variable de entorno si es placeholder
+var pepperConfig = builder.Configuration.GetSection("security");
+var pepper = pepperConfig["pepper"];
+if (pepper == "__PEPPER__")
+{
+    pepper = Environment.GetEnvironmentVariable("PEPPER") ?? throw new Exception("PEPPER env variable not found.");
+}
+// Puedes pasar 'pepper' a tus servicios donde lo necesites
 
 builder.Services.AddAuthentication(options =>
 {
@@ -39,7 +58,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<DbRelojChecadorContext>();
+// Configurar la cadena de conexión desde variable de entorno si es placeholder
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (connectionString == "__CONNECTION_STRING__")
+{
+    connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ?? throw new Exception("CONNECTION_STRING env variable not found.");
+}
+builder.Services.AddDbContext<DbRelojChecadorContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 builder.Services.AddScoped<IUsuariosService, UsuariosService>();
 builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<IUsuarioAreaService, UsuarioAreaService>();
