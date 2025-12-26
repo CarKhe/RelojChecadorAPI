@@ -10,9 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cargar variables desde .env
-Env.Load();
-
 // ---- JWT ---- //
 var jwtConfig = builder.Configuration.GetSection("Jwt");
 var keyString = jwtConfig["Key"] ?? throw new Exception("JWT Key not found in configuration.");
