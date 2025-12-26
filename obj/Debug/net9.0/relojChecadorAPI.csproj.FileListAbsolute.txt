@@ -149,3 +149,6 @@
 /Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/RBush.dll
 /Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/SixLabors.Fonts.dll
 /Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/System.IO.Packaging.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/appsettings.Production.json
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/DotNetEnv.dll
+/Users/carlosrodriguez/Documents/proyectos/relojChecador/relojChecadorAPI/bin/Debug/net9.0/Sprache.dll

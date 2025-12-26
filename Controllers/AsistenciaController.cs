@@ -37,12 +37,13 @@ namespace MyApp.Namespace
             bool result;
             List<string> errores;
             (result, errores) = await _service.PostAsistencia(asistencia);
-            if (!result)
+            if (!result || errores.Count > 0)
             {
                 return BadRequest(new
                 {
                     Mensaje = "Error en las llaves foráneas.",
-                    Errores = errores
+                    Errores = errores,
+                    Realizado = false
                 });
             }
             return Ok(new { Mensaje = _mensajeDB.MensajeModificarDB(MODELO,0) });
