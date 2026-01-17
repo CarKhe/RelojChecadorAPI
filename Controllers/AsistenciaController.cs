@@ -31,6 +31,13 @@ namespace MyApp.Namespace
             return Ok(equipos);
         }
 
+        [HttpGet("lastByUser/{userId}/{cant}")]
+        public async Task<ActionResult<IEnumerable<AsistenciaToDashboard>>> GetLastAsistenciasByUser(int userId, int cant)
+        {
+            var equipos = await _service.GetLastAsistenciasByUser(userId, cant);
+            return Ok(equipos);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostAsistencia([FromBody] AsistenciaCrearDto asistencia)
         {

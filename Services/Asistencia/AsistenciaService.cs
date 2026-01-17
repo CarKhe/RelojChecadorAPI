@@ -35,6 +35,12 @@ public class AsistenciaService : IAsistenciaService
         return await query.ToListAsync();
     }
 
+    public async Task<IEnumerable<AsistenciaToDashboard>> GetLastAsistenciasByUser(int userId, int cant)
+    {
+        var query = GetLastAsistenciaUserQuery(userId,cant);
+        return await query.ToListAsync();
+    }
+
     public async Task<LastRegisterReturnDTO> GetLastAsistenciaStatus(LastRegisterDTO lastRegister)
     {
         LastRegisterReturnDTO? lastStatus = await GetLastAsistenciaStatus(lastRegister.idUsuario);
@@ -146,6 +152,25 @@ public class AsistenciaService : IAsistenciaService
                .Take(cant);
     }
 
+    private IQueryable<AsistenciaToDashboard> GetLastAsistenciaUserQuery(int userId, int cant)
+    {
+        return (from a in _context.TblAsistencia
+               join u in _context.TblUsuarios on a.IdUsuario equals u.IdUsuario
+               join ar in _context.TblAreas on a.IdArea equals ar.IdArea
+               join tp in _context.TblTipoMovimientos on a.IdMovimiento equals tp.IdMovimiento
+               where a.IdUsuario == userId
+               orderby a.FechaHora descending
+               select new AsistenciaToDashboard
+               {
+                   usuario = u.Nombre,
+                   area = ar.Nombre,
+                   movimiento = tp.Movimiento,
+                   dentroZona = a.DentroZona,
+                   fechaHora = a.FechaHora
+               })
+               .Take(cant);
+    }
+
 
 
     private IQueryable<AreaDto>GetCenLatLonRad(AsistenciaCrearDto asistencia)
@@ -191,10 +216,6 @@ public class AsistenciaService : IAsistenciaService
             })
             .FirstOrDefaultAsync();
     }
-
-
-
-    
 
 
 }
