@@ -81,6 +81,7 @@ public class AsistenciaService : IAsistenciaService
 
             var valorGuardar = _mapper.Map<TblAsistencium>(asistenciaCrear);
             valorGuardar.DentroZona = dentroZona;
+            valorGuardar.FechaHora = DateTime.Now;
 
             _context.Add(valorGuardar);
             await _context.SaveChangesAsync();
