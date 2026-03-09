@@ -81,7 +81,10 @@ public class AsistenciaService : IAsistenciaService
 
             var valorGuardar = _mapper.Map<TblAsistencium>(asistenciaCrear);
             valorGuardar.DentroZona = dentroZona;
-            valorGuardar.FechaHora = DateTime.Now;
+            valorGuardar.FechaHora = TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.UtcNow,
+                TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time")
+            );
 
             _context.Add(valorGuardar);
             await _context.SaveChangesAsync();
